@@ -1,0 +1,221 @@
+// --- التحكم في التبويبات ---
+const tabButtons = document.querySelectorAll(".tab-btn");
+const tabContents = document.querySelectorAll(".tab-content");
+
+tabButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        tabContents.forEach(c => c.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+    });
+});
+
+// =============== التبويب الأول ===============
+const qrInput = document.getElementById("qr-input");
+const qrCodeContainer = document.getElementById("qr-code");
+const qrAddLogoBtn = document.getElementById("qr-add-logo");
+const qrRemoveLogoBtn = document.getElementById("qr-remove-logo");
+const qrLogoUpload = document.getElementById("qr-logo-upload");
+const qrClearBtn = document.getElementById("qr-clear");
+const qrColorDarkInput = document.getElementById("qr-color-dark");
+const qrColorLightInput = document.getElementById("qr-color-light");
+const qrSaveBtn = document.getElementById("qr-save");
+const qrShareBtn = document.getElementById("qr-share");
+const qrCopyBtn = document.getElementById("qr-copy");
+
+let qrLogoImage = null;
+let qrColorDark = "#000000";
+let qrColorLight = "#ffffff";
+
+let qrCode = new QRCodeStyling({
+    width: 250,
+    height: 250,
+    type: "canvas",
+    data: "",
+    dotsOptions: { color: qrColorDark, type: "rounded" },
+    backgroundOptions: { color: qrColorLight }
+});
+
+function updateQRCode() {
+    const val = qrInput.value.trim();
+    qrCodeContainer.innerHTML = "";
+    if (!val) return;
+    qrCode = new QRCodeStyling({
+        width: 250,
+        height: 250,
+        data: val,
+        type: "canvas",
+        image: qrLogoImage ? qrLogoImage.src : undefined,
+        dotsOptions: { color: qrColorDark, type: "rounded" },
+        backgroundOptions: { color: qrColorLight },
+        imageOptions: { crossOrigin: "anonymous", margin: 4 }
+    });
+    qrCode.append(qrCodeContainer);
+}
+
+qrInput.addEventListener("input", updateQRCode);
+qrColorDarkInput.addEventListener("input", e => { qrColorDark = e.target.value; updateQRCode(); });
+qrColorLightInput.addEventListener("input", e => { qrColorLight = e.target.value; updateQRCode(); });
+
+qrAddLogoBtn.addEventListener("click", () => {
+    if (!qrInput.value.trim()) return alert("يرجى إدخال نص أولاً");
+    qrLogoUpload.click();
+});
+
+qrLogoUpload.addEventListener("change", () => {
+    const file = qrLogoUpload.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        qrLogoImage = new Image();
+        qrLogoImage.src = e.target.result;
+        qrLogoImage.onload = updateQRCode;
+    };
+    reader.readAsDataURL(file);
+});
+
+qrRemoveLogoBtn.addEventListener("click", () => {
+    qrLogoImage = null;
+    updateQRCode();
+});
+
+qrClearBtn.addEventListener("click", () => {
+    qrInput.value = "";
+    qrLogoImage = null;
+    qrCodeContainer.innerHTML = "";
+});
+
+// حفظ - نسخ - مشاركة
+qrSaveBtn.addEventListener("click", () => qrCode.download({ name: "qr-code", extension: "png" }));
+qrCopyBtn.addEventListener("click", async () => {
+    const blob = await qrCode.getRawData("png");
+    navigator.clipboard.write([new ClipboardItem({ "image/png": blob })])
+        .then(() => alert("تم نسخ رمز QR"))
+        .catch(() => alert("حدث خطأ في النسخ"));
+});
+qrShareBtn.addEventListener("click", async () => {
+    const blob = await qrCode.getRawData("png");
+    const file = new File([blob], "qr-code.png", { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+            files: [file],
+            title: "رمز QR",
+            text: `${qrInput.value.trim()}\n\nجرب إنشاء رموزك الخاصة من : https://ed3s.com/qr`
+        });	
+    } else alert("المشاركة غير مدعومة في هذا المتصفح");
+});
+
+// =============== التبويب الثاني ===============
+const longUrlInput = document.getElementById("long-url");
+const shortUrlInput = document.getElementById("short-url");
+const urlAddLogoBtn = document.getElementById("url-add-logo");
+const urlRemoveLogoBtn = document.getElementById("url-remove-logo");
+const urlLogoUpload = document.getElementById("url-logo-upload");
+const urlClearBtn = document.getElementById("url-clear");
+const urlColorDarkInput = document.getElementById("url-color-dark");
+const urlColorLightInput = document.getElementById("url-color-light");
+const urlSaveBtn = document.getElementById("url-save");
+const urlShareBtn = document.getElementById("url-share");
+const urlCopyBtn = document.getElementById("url-copy");
+const urlShortenBtn = document.getElementById("url-shorten");
+const urlCopyShortBtn = document.getElementById("url-copy-short");
+const urlQrContainer = document.getElementById("url-qr-code");
+
+let urlLogoImage = null;
+let urlColorDark = "#000000";
+let urlColorLight = "#ffffff";
+let urlQRCode = null;
+
+async function shortenUrl(longUrl) {
+    try {
+        const res = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}`);
+        const data = await res.json();
+        if (data.shorturl) return data.shorturl;
+        throw new Error(data.errormessage || "فشل الاختصار");
+    } catch (e) {
+        alert("فشل في اختصار الرابط: " + e.message);
+        return "";
+    }
+}
+
+function updateUrlQRCode() {
+    const val = shortUrlInput.value.trim();
+    urlQrContainer.innerHTML = "";
+    if (!val) return;
+    urlQRCode = new QRCodeStyling({
+        width: 250,
+        height: 250,
+        data: val,
+        type: "canvas",
+        image: urlLogoImage ? urlLogoImage.src : undefined,
+        dotsOptions: { color: urlColorDark, type: "rounded" },
+        backgroundOptions: { color: urlColorLight },
+        imageOptions: { crossOrigin: "anonymous", margin: 4 }
+    });
+    urlQRCode.append(urlQrContainer);
+}
+
+urlShortenBtn.addEventListener("click", async () => {
+    const longUrl = longUrlInput.value.trim();
+    if (!longUrl) return alert("يرجى إدخال الرابط أولاً");
+    shortUrlInput.value = "جاري الاختصار...";
+    const shortUrl = await shortenUrl(longUrl);
+    shortUrlInput.value = shortUrl;
+    updateUrlQRCode();
+});
+
+urlAddLogoBtn.addEventListener("click", () => {
+    if (!shortUrlInput.value.trim()) return alert("يجب توليد QR أولاً");
+    urlLogoUpload.click();
+});
+
+urlLogoUpload.addEventListener("change", () => {
+    const file = urlLogoUpload.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        urlLogoImage = new Image();
+        urlLogoImage.src = e.target.result;
+        urlLogoImage.onload = updateUrlQRCode;
+    };
+    reader.readAsDataURL(file);
+});
+
+urlRemoveLogoBtn.addEventListener("click", () => {
+    urlLogoImage = null;
+    updateUrlQRCode();
+});
+
+urlColorDarkInput.addEventListener("input", e => { urlColorDark = e.target.value; updateUrlQRCode(); });
+urlColorLightInput.addEventListener("input", e => { urlColorLight = e.target.value; updateUrlQRCode(); });
+urlClearBtn.addEventListener("click", () => {
+    longUrlInput.value = "";
+    shortUrlInput.value = "";
+    urlQrContainer.innerHTML = "";
+    urlLogoImage = null;
+});
+
+urlSaveBtn.addEventListener("click", () => urlQRCode?.download({ name: "url-qr", extension: "png" }));
+urlCopyShortBtn.addEventListener("click", () => {
+    navigator.clipboard.writeText(shortUrlInput.value.trim())
+        .then(() => alert("تم النسخ"))
+        .catch(() => alert("فشل النسخ"));
+});
+urlCopyBtn.addEventListener("click", async () => {
+    const blob = await urlQRCode.getRawData("png");
+    navigator.clipboard.write([new ClipboardItem({ "image/png": blob })])
+        .then(() => alert("تم نسخ رمز QR"))
+        .catch(() => alert("حدث خطأ"));
+});
+urlShareBtn.addEventListener("click", async () => {
+    const blob = await urlQRCode.getRawData("png");
+    const file = new File([blob], "url-qr.png", { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+            files: [file],
+            title: "رمز QR",
+            text: `${qrInput.value.trim()}\n\nجرب إنشاء رموزك الخاصة من : https://ed3s.com/qr`
+        });
+    } else alert("المشاركة غير مدعومة");
+});
