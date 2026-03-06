@@ -126,12 +126,12 @@ text-decoration:none;
 </div>
 
 <footer>
-بواسطة <a href="https://ed3s.com">ed3s.com</a>
+<a href="https://ed3s.com">ed3s.com</a> | <a href="https://github.com/ed3s">GitHub</a>
 </footer>
 
 <script>
 
-// تعبئة الأيام
+
 for(let i=1;i<=31;i++){
 let option=document.createElement("option");
 option.value=i;
@@ -139,7 +139,7 @@ option.text=i;
 document.getElementById("day").appendChild(option);
 }
 
-// تعبئة الأشهر
+
 for(let i=1;i<=12;i++){
 let option=document.createElement("option");
 option.value=i;
@@ -147,7 +147,7 @@ option.text=i;
 document.getElementById("month").appendChild(option);
 }
 
-// تعبئة السنوات
+
 let currentYear=new Date().getFullYear();
 
 for(let i=currentYear;i>=1900;i--){
