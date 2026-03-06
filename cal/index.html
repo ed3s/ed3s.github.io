@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -21,8 +22,8 @@ display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
-background: linear-gradient(135deg,#0f0f10,#1c1c1e);
-font-family:'IBM Plex Sans Arabic', sans-serif;
+background:linear-gradient(135deg,#0f0f10,#1c1c1e);
+font-family:'IBM Plex Sans Arabic',sans-serif;
 color:white;
 direction:rtl;
 padding:20px;
@@ -36,50 +37,30 @@ border-radius:28px;
 padding:35px 25px;
 box-shadow:0 15px 40px rgba(0,0,0,0.5);
 text-align:center;
-transition:0.3s;
-}
-
-.container:hover{
-box-shadow:0 25px 50px rgba(0,0,0,0.7);
 }
 
 h1{
 font-size:26px;
-font-weight:600;
+margin-bottom:25px;
+}
+
+.picker{
+display:flex;
+gap:10px;
 margin-bottom:20px;
-letter-spacing:1px;
 }
 
-label{
-display:block;
-margin-bottom:10px;
-font-size:14px;
-color:#aaa;
-}
-
-input[type="date"]{
-width:100%;
-padding:16px;
+.picker select{
+flex:1;
+padding:14px;
 border-radius:14px;
 border:none;
 background:#2c2c2e;
 color:white;
-font-size:17px;
-margin-bottom:20px;
-font-family:'IBM Plex Sans Arabic', sans-serif;
-direction:ltr;
-text-align:left;
-transition:0.2s;
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-filter: invert(1) brightness(2);
-cursor:pointer;
-}
-
-input[type="date"]:focus{
-outline:none;
-box-shadow:0 0 8px #940aff;
+font-size:16px;
+text-align:center;
+font-family:'IBM Plex Sans Arabic',sans-serif;
+appearance:none;
 }
 
 button{
@@ -87,17 +68,16 @@ width:100%;
 padding:16px;
 border-radius:14px;
 border:none;
-background:#940aff;
+background:#5d0dff;
 color:white;
 font-size:17px;
 cursor:pointer;
 font-weight:500;
 transition:0.3s;
-font-family:'IBM Plex Sans Arabic', sans-serif;
 }
 
 button:hover{
-background:#a735ff;
+background:#7a3cff;
 }
 
 .card{
@@ -115,7 +95,6 @@ footer{
 margin-top:30px;
 font-size:12px;
 color:#888;
-text-align:center;
 }
 
 footer a{
@@ -132,9 +111,13 @@ text-decoration:none;
 
 <h1>حاسبة العمر</h1>
 
-<label>تاريخ الميلاد</label>
+<div class="picker">
 
-<input type="date" id="birth" lang="en" dir="ltr" onfocus="this.showPicker()">
+<select id="day"></select>
+<select id="month"></select>
+<select id="year"></select>
+
+</div>
 
 <button onclick="calculate()">احسب العمر</button>
 
@@ -148,34 +131,62 @@ text-decoration:none;
 
 <script>
 
+// تعبئة الأيام
+for(let i=1;i<=31;i++){
+let option=document.createElement("option");
+option.value=i;
+option.text=i;
+document.getElementById("day").appendChild(option);
+}
+
+// تعبئة الأشهر
+for(let i=1;i<=12;i++){
+let option=document.createElement("option");
+option.value=i;
+option.text=i;
+document.getElementById("month").appendChild(option);
+}
+
+// تعبئة السنوات
+let currentYear=new Date().getFullYear();
+
+for(let i=currentYear;i>=1900;i--){
+let option=document.createElement("option");
+option.value=i;
+option.text=i;
+document.getElementById("year").appendChild(option);
+}
+
 function calculate(){
 
-let birthValue = document.getElementById("birth").value;
+let day=document.getElementById("day").value;
+let month=document.getElementById("month").value-1;
+let year=document.getElementById("year").value;
 
-if(!birthValue){
-document.getElementById("result").innerHTML="يرجى إدخال تاريخ الميلاد";
+if(!day || !month || !year){
+document.getElementById("result").innerHTML="يرجى اختيار تاريخ الميلاد";
 return;
 }
 
-let birth = new Date(birthValue);
-let now = new Date();
+let birth=new Date(year,month,day);
+let now=new Date();
 
-let years = now.getFullYear() - birth.getFullYear();
-let months = now.getMonth() - birth.getMonth();
-let days = now.getDate() - birth.getDate();
+let years=now.getFullYear()-birth.getFullYear();
+let months=now.getMonth()-birth.getMonth();
+let days=now.getDate()-birth.getDate();
 
-if(days < 0){
+if(days<0){
 months--;
-let lastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-days += lastMonth.getDate();
+let lastMonth=new Date(now.getFullYear(),now.getMonth(),0);
+days+=lastMonth.getDate();
 }
 
-if(months < 0){
+if(months<0){
 years--;
-months += 12;
+months+=12;
 }
 
-document.getElementById("result").innerHTML =
+document.getElementById("result").innerHTML=
 `${years} سنة / ${months} شهر / ${days} يوم`;
 
 }
