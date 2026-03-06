@@ -113,9 +113,17 @@ text-decoration:none;
 
 <div class="picker">
 
-<select id="day"></select>
-<select id="month"></select>
-<select id="year"></select>
+<select id="day">
+<option value="">اليوم</option>
+</select>
+
+<select id="month">
+<option value="">الشهر</option>
+</select>
+
+<select id="year">
+<option value="">السنة</option>
+</select>
 
 </div>
 
@@ -131,7 +139,7 @@ text-decoration:none;
 
 <script>
 
-
+// الأيام
 for(let i=1;i<=31;i++){
 let option=document.createElement("option");
 option.value=i;
@@ -139,7 +147,7 @@ option.text=i;
 document.getElementById("day").appendChild(option);
 }
 
-
+// الأشهر
 for(let i=1;i<=12;i++){
 let option=document.createElement("option");
 option.value=i;
@@ -147,7 +155,7 @@ option.text=i;
 document.getElementById("month").appendChild(option);
 }
 
-
+// السنوات
 let currentYear=new Date().getFullYear();
 
 for(let i=currentYear;i>=1900;i--){
@@ -160,15 +168,15 @@ document.getElementById("year").appendChild(option);
 function calculate(){
 
 let day=document.getElementById("day").value;
-let month=document.getElementById("month").value-1;
+let month=document.getElementById("month").value;
 let year=document.getElementById("year").value;
 
-if(!day || !month || !year){
+if(day=="" || month=="" || year==""){
 document.getElementById("result").innerHTML="يرجى اختيار تاريخ الميلاد";
 return;
 }
 
-let birth=new Date(year,month,day);
+let birth=new Date(year,month-1,day);
 let now=new Date();
 
 let years=now.getFullYear()-birth.getFullYear();
