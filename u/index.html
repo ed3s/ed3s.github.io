@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-  <title>UTM Generator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+
+  <title>UTM Generator | ed3s.com</title>
 
   <!-- IBM Plex Sans Arabic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,13 +19,14 @@
 
     :root {
       color-scheme: dark;
-      --bg: #000;
+      --bg: #000000;
       --panel: #0a0a0a;
-      --field: #111;
+      --field: #111111;
       --border: #292929;
       --text: #f5f5f5;
       --muted: #929292;
-      --accent: #fff;
+      --button-bg: #151515;
+      --button-hover: #252525;
     }
 
     body {
@@ -57,9 +59,9 @@
       width: 42px;
       height: 42px;
       margin-bottom: 12px;
-      border: 1px solid #444;
+      border: 1px solid #444444;
       border-radius: 10px;
-      color: #fff;
+      color: #ffffff;
       font-size: 20px;
       font-weight: 700;
     }
@@ -68,7 +70,7 @@
       font-size: 26px;
       font-weight: 700;
       margin: 0 0 8px;
-      color: #fff;
+      color: #ffffff;
     }
 
     .description {
@@ -85,8 +87,8 @@
       margin-top: 14px;
       border: 1px solid var(--border);
       border-radius: 6px;
-      background: #111;
-      color: #ddd;
+      background: #111111;
+      color: #dddddd;
       font: 12px monospace;
       overflow-wrap: anywhere;
     }
@@ -115,7 +117,7 @@
     }
 
     textarea:focus {
-      border-color: #777;
+      border-color: #777777;
     }
 
     textarea::placeholder {
@@ -134,41 +136,34 @@
       margin-top: 14px;
     }
 
+    /* جميع الأزرار بلون موحّد */
     button {
-      border: 1px solid var(--border);
+      appearance: none;
+      background: var(--button-bg);
+      color: #eeeeee;
+      border: 1px solid #292929;
       padding: 11px 18px;
       border-radius: 9px;
       cursor: pointer;
       font: 600 14px "IBM Plex Sans Arabic", sans-serif;
-      transition: background 0.2s, color 0.2s,
-                  border-color 0.2s;
-    }
-
-    .primary {
-      background: #fff;
-      color: #000;
-      border-color: #fff;
-    }
-
-    .secondary {
-      background: #151515;
-      color: #eee;
-    }
-
-    .success {
-      background: #171717;
-      color: #fff;
-      border-color: #444;
+      transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s;
     }
 
     button:hover {
-      background: #dcdcdc;
-      color: #000;
-      border-color: #dcdcdc;
+      background: var(--button-hover);
+      color: #ffffff;
+      border-color: #444444;
+    }
+
+    button:active {
+      background: #303030;
     }
 
     button:focus-visible {
-      outline: 2px solid white;
+      outline: 2px solid #aaaaaa;
       outline-offset: 3px;
     }
 
@@ -177,12 +172,13 @@
       font-size: 13px;
       color: #bdbdbd;
       min-height: 25px;
+      overflow-wrap: anywhere;
     }
 
     .footer {
       text-align: center;
       margin-top: 25px;
-      color: #666;
+      color: #666666;
       font-size: 12px;
     }
 
@@ -208,28 +204,34 @@
 </head>
 
 <body>
-
   <main class="container">
 
     <header class="header">
       <div class="logo">U</div>
 
+      
     </header>
 
     <section>
-      <label for="input">الاصلي</label>
+      <label for="input">النص أو الروابط الأصلية</label>
 
       <textarea
         id="input"
-        placeholder="ضع الروابط أو النص هنا..."
+        placeholder="ضع الروابط أو النص هنا...
+
+"
       ></textarea>
 
       <div class="buttons">
-        <button class="primary" id="processBtn">
+        <button type="button" id="processBtn">
           إضافة UTM
         </button>
 
-        <button class="secondary" id="clearBtn">
+        <button type="button" id="pasteBtn">
+          لصق من الحافظة
+        </button>
+
+        <button type="button" id="clearBtn">
           مسح الكل
         </button>
       </div>
@@ -246,11 +248,11 @@
       ></textarea>
 
       <div class="buttons">
-        <button class="success" id="copyAllBtn">
-          نسخ النص كاملاً
+        <button type="button" id="copyAllBtn">
+          نسخ النص كاملًا
         </button>
 
-        <button class="primary" id="copyLinksBtn">
+        <button type="button" id="copyLinksBtn">
           نسخ الروابط فقط
         </button>
       </div>
@@ -264,7 +266,7 @@
     </section>
 
     <footer class="footer">
-      UTM Generator | ed3s.com
+      UTM Generator · ed3s.com
     </footer>
 
   </main>
@@ -277,7 +279,7 @@
     const UTM_KEY = "utm_source";
     const UTM_VALUE = "ed3s.com";
 
-  
+    
     function processText(text) {
       const urlPattern = /https?:\/\/[^\s<>"']+/gi;
 
@@ -298,6 +300,7 @@
             return original;
           }
 
+          
           if (!parsed.searchParams.has(UTM_KEY)) {
             parsed.searchParams.append(UTM_KEY, UTM_VALUE);
           }
@@ -312,16 +315,48 @@
     
     function updateOutput() {
       output.value = processText(input.value);
+
       status.textContent = input.value.trim()
-        ? "تم تحديث الروابط تلقائياً"
+        ? "تم تحديث الروابط تلقائيًا."
         : "";
     }
 
     input.addEventListener("input", updateOutput);
 
+    
     document.getElementById("processBtn").addEventListener(
       "click",
       updateOutput
+    );
+
+    
+    document.getElementById("pasteBtn").addEventListener(
+      "click",
+      async () => {
+        try {
+          if (!navigator.clipboard?.readText) {
+            throw new Error("Clipboard unavailable");
+          }
+
+          const clipboardText =
+            await navigator.clipboard.readText();
+
+          if (!clipboardText.trim()) {
+            status.textContent = "الحافظة فارغة.";
+            return;
+          }
+
+          input.value = clipboardText;
+          updateOutput();
+          input.focus();
+
+          status.textContent =
+            "تم اللصق وإضافة UTM بنجاح.";
+        } catch {
+          status.textContent =
+            "تعذّر الوصول للحافظة. تحقق من إذن المتصفح أو الصق النص يدويًا.";
+        }
+      }
     );
 
     
@@ -335,7 +370,7 @@
       }
     );
 
-
+    
     async function copyText(text, message) {
       if (!text.trim()) {
         status.textContent = "لا يوجد محتوى لنسخه.";
@@ -343,11 +378,15 @@
       }
 
       try {
+        if (!navigator.clipboard?.writeText) {
+          throw new Error("Clipboard unavailable");
+        }
+
         await navigator.clipboard.writeText(text);
         status.textContent = message;
       } catch {
-        
         const helper = document.createElement("textarea");
+
         helper.value = text;
         helper.style.position = "fixed";
         helper.style.opacity = "0";
@@ -369,17 +408,17 @@
 
         status.textContent = copied
           ? message
-          : "تعذر النسخ تلقائياً , يرجى النسخ يدوياً";
+          : "تعذّر النسخ تلقائيًا. يرجى النسخ يدويًا.";
       }
     }
 
-   
+    
     document.getElementById("copyAllBtn").addEventListener(
       "click",
       () => {
         copyText(
           output.value,
-          "تم نسخ النص كاملاً بنجاح"
+          "تم نسخ النص كاملًا بنجاح."
         );
       }
     );
@@ -401,6 +440,5 @@
       }
     );
   </script>
-
 </body>
 </html>
