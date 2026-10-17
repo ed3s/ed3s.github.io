@@ -249,7 +249,7 @@
 
       <div class="buttons">
         <button type="button" id="copyAllBtn">
-          نسخ النص كاملًا
+          نسخ النص كاملاً
         </button>
 
         <button type="button" id="copyLinksBtn">
@@ -266,7 +266,7 @@
     </section>
 
     <footer class="footer">
-      UTM Generator · ed3s.com
+      UTM Generator | ed3s.com
     </footer>
 
   </main>
@@ -317,7 +317,7 @@
       output.value = processText(input.value);
 
       status.textContent = input.value.trim()
-        ? "تم تحديث الروابط تلقائيًا."
+        ? "تم تحديث الروابط تلقائياً"
         : "";
     }
 
@@ -354,7 +354,7 @@
             "تم اللصق وإضافة UTM بنجاح.";
         } catch {
           status.textContent =
-            "تعذّر الوصول للحافظة. تحقق من إذن المتصفح أو الصق النص يدويًا.";
+            "تعذّر الوصول للحافظة. تحقق من إذن المتصفح أو الصق النص يدوياً";
         }
       }
     );
@@ -418,7 +418,7 @@
       () => {
         copyText(
           output.value,
-          "تم نسخ النص كاملًا بنجاح."
+          "تم نسخ النص كاملاً بنجاح"
         );
       }
     );
