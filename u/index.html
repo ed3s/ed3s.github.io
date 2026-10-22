@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -7,7 +8,6 @@
 
   <title>UTM Generator | ed3s.com</title>
 
-  <!-- IBM Plex Sans Arabic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -136,7 +136,6 @@
       margin-top: 14px;
     }
 
-    /* جميع الأزرار بلون موحّد */
     button {
       appearance: none;
       background: var(--button-bg);
@@ -181,6 +180,11 @@
       color: #666666;
       font-size: 12px;
     }
+	.footer a,.footer a:visited,.footer a:hover,.footer a:active {
+color: inherit;
+text-decoration: none;
+text-decoration: none;
+}
 
     @media (max-width: 600px) {
       body {
@@ -208,8 +212,6 @@
 
     <header class="header">
       <div class="logo">U</div>
-
-      
     </header>
 
     <section>
@@ -217,9 +219,8 @@
 
       <textarea
         id="input"
-        placeholder="ضع الروابط أو النص هنا...
-
-"
+        placeholder="ضع الروابط أو النص هنا..."
+        spellcheck="false"
       ></textarea>
 
       <div class="buttons">
@@ -266,7 +267,7 @@
     </section>
 
     <footer class="footer">
-      UTM Generator | ed3s.com
+      UTM Generator | <a href="https://ed3s.com">ed3s.com</a>
     </footer>
 
   </main>
@@ -280,10 +281,21 @@
     const UTM_VALUE = "ed3s.com";
 
     
+    const BIDI_CHARS =
+      /[\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/g;
+
+    
+    function cleanText(text) {
+      return text.replace(BIDI_CHARS, "");
+    }
+
     function processText(text) {
+      
+      const cleanedText = cleanText(text);
+
       const urlPattern = /https?:\/\/[^\s<>"']+/gi;
 
-      return text.replace(urlPattern, (original) => {
+      return cleanedText.replace(urlPattern, (original) => {
         let url = original;
         let ending = "";
 
@@ -312,15 +324,15 @@
       });
     }
 
-    
     function updateOutput() {
       output.value = processText(input.value);
 
       status.textContent = input.value.trim()
-        ? "تم تحديث الروابط تلقائياً"
+        ? "تم تنظيف النص وتحديث الروابط تلقائياً."
         : "";
     }
 
+    
     input.addEventListener("input", updateOutput);
 
     
@@ -338,8 +350,7 @@
             throw new Error("Clipboard unavailable");
           }
 
-          const clipboardText =
-            await navigator.clipboard.readText();
+          const clipboardText = await navigator.clipboard.readText();
 
           if (!clipboardText.trim()) {
             status.textContent = "الحافظة فارغة.";
@@ -351,10 +362,10 @@
           input.focus();
 
           status.textContent =
-            "تم اللصق وإضافة UTM بنجاح.";
+            "تم اللصق وتنظيف النص وإضافة UTM بنجاح.";
         } catch {
           status.textContent =
-            "تعذّر الوصول للحافظة. تحقق من إذن المتصفح أو الصق النص يدوياً";
+            "تعذّر الوصول للحافظة. تحقق من إذن المتصفح أو الصق النص يدوياً.";
         }
       }
     );
@@ -408,7 +419,7 @@
 
         status.textContent = copied
           ? message
-          : "تعذّر النسخ تلقائيًا. يرجى النسخ يدويًا.";
+          : "تعذّر النسخ تلقائياً. يرجى النسخ يدوياً.";
       }
     }
 
@@ -418,7 +429,7 @@
       () => {
         copyText(
           output.value,
-          "تم نسخ النص كاملاً بنجاح"
+          "تم نسخ النص كاملاً بنجاح."
         );
       }
     );
